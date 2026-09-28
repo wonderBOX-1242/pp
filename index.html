@@ -4,11 +4,13 @@
   <meta charset="UTF-8">
   <title>ARテスト</title>
 
-  <!-- A-Frame -->
-  <script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js"></script>
 
-  <!-- AR.js NFT -->
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.8/aframe/build/aframe-ar-nft.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.8/aframe/build/aframe-ar-nft.js"
+  onload="document.getElementById('debug').innerHTML += '<br>AR.js読み込みOK';"
+  onerror="document.getElementById('debug').innerHTML += '<br>AR.js読み込み失敗';">
+</script>
 
   <style>
     body {
