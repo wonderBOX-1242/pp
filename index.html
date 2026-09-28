@@ -31,7 +31,17 @@
 </head>
 
 <body>
+<script>
+  const nft = document.querySelector('#myNFT');
 
+  nft.addEventListener('markerFound', () => {
+    alert('🎯 画像を認識しました！');
+  });
+
+  nft.addEventListener('markerLost', () => {
+    console.log('画像を見失いました');
+  });
+</script>
   
   <a-scene
     vr-mode-ui="enabled: false"
@@ -40,14 +50,16 @@
     arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
   >
 
-    <a-nft
-      type="nft"
-      url="illustreter"
-      smooth="true"
-      smoothCount="10"
-      smoothTolerance="0.01"
-      smoothThreshold="5"
-    >
+   <a-nft
+  type="nft"
+  url="illustreter"
+  smooth="true"
+  smoothCount="10"
+  smoothTolerance="0.01"
+  smoothThreshold="5"
+  emitevents="true"
+  id="myNFT"
+>
 
       <a-box
       <a-box
