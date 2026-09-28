@@ -21,10 +21,17 @@
   arjs="sourceType: webcam; debugUIEnabled: true;"
 >
 
-  <a-nft
-    type="nft"
-    url="illustreter"
-  >
+ <a-nft
+  id="myNFT"
+  type="nft"
+  url="illustreter"
+  emitevents="true"
+>
+<script>
+  document.querySelector('#myNFT').addEventListener('arjs-nft-loaded', function () {
+    console.log('NFT読み込み完了！');
+  });
+</script>
     <a-box
       position="0 0 0"
       scale="1 1 1"
