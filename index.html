@@ -4,16 +4,32 @@
   <meta charset="UTF-8">
   <title>ARテスト</title>
 
- <script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js"></script>
-<script src="https://raw.githack.com/AR-js-org/AR.js/3.4.8/aframe/build/aframe-ar-nft.js"></script>
+  <!-- A-Frame -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js"></script>
+
+  <!-- AR.js Image Tracking -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+
+  <style>
     body {
       margin: 0;
       overflow: hidden;
+    }
+
+    #status {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 9999;
+      color: red;
+      font-size: 20px;
     }
   </style>
 </head>
 
 <body>
+
+  <div id="status">AR起動中...</div>
 
   <a-scene
     vr-mode-ui="enabled: false"
@@ -21,18 +37,11 @@
     embedded
     arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
   >
-<div style="position:fixed;top:10px;left:10px;z-index:9999;color:red;font-size:20px;">
-NFTテスト
-</div>
-<div id="status"
-     style="position:fixed;top:50px;left:10px;z-index:9999;color:red;font-size:20px;">
-  NFT読み込み確認中...
-</div>
-<a-nft
-  type="nft"
- url="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/trex-image/trex"
-  emitevents="true"
-  smooth="true"
+
+    <a-nft
+      type="nft"
+      url="./illustreter"
+      smooth="true"
       smoothCount="10"
       smoothTolerance="0.01"
       smoothThreshold="5"
@@ -49,20 +58,18 @@ NFTテスト
     <a-entity camera></a-entity>
 
   </a-scene>
-  <script>
-    const nft = document.querySelector('a-nft');
 
-    nft.addEventListener('loaded', function () {
+  <script>
+    window.addEventListener('load', function () {
       document.getElementById('status').textContent =
-        'NFTコンポーネント読み込みOK';
+        'AR起動・NFT読み込み中...';
     });
 
-    nft.addEventListener('arjs-nft-loaded', function () {
+    window.addEventListener('arjs-nft-loaded', function () {
       document.getElementById('status').textContent =
-        '🎯 NFTデータ読み込み完了';
+        'NFT読み込み完了！画像を見せてね';
     });
   </script>
 
 </body>
-  
 </html>
