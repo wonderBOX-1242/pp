@@ -2,15 +2,12 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>ARテスト</title>
 
-<script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js"></script>
-
-<script
-  src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.8/aframe/build/aframe-ar-nft.js"
-  onload="document.getElementById('debug').innerHTML += '<br>AR.js読み込みOK';"
-  onerror="document.getElementById('debug').innerHTML += '<br>AR.js読み込み失敗';">
-</script>
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
     body {
@@ -23,19 +20,10 @@
       top: 10px;
       left: 10px;
       z-index: 9999;
-      color: red;
-      font-size: 20px;
-    }
-
-    #debug {
-      position: fixed;
-      top: 50px;
-      left: 10px;
-      z-index: 99999;
       background: white;
       color: black;
-      font-size: 18px;
       padding: 10px;
+      font-size: 18px;
     }
   </style>
 </head>
@@ -43,98 +31,54 @@
 <body>
 
   <div id="status">
-    AR起動中...
-  </div>
-
-  <div id="debug">
-    NFTチェック開始
+    MindAR起動中...
   </div>
 
   <a-scene
+    mindar-image="
+      imageTargetSrc: ./targets.mind;
+      uiLoading: yes;
+      uiScanning: yes;
+      uiError: yes;
+    "
+    color-space="sRGB"
+    renderer="colorManagement: true"
     vr-mode-ui="enabled: false"
-    renderer="logarithmicDepthBuffer: true; precision: medium;"
-    embedded
-    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+    device-orientation-permission-ui="enabled: false"
   >
 
-  <a-nft
-  id="myNFT"
-  type="nft"
-  url="tuki"
-  smooth="true"
-  smoothCount="10"
-  smoothTolerance="0.01"
-  smoothThreshold="5"
-  emitevents="true">
+    <a-camera
+      position="0 0 0"
+      look-controls="enabled: false">
+    </a-camera>
 
-  <a-box
-    position="0 0 0"
-    scale="1 1 1"
-    color="purple">
-  </a-box>
+    <a-entity mindar-image-target="targetIndex: 0">
 
-</a-nft>
-    <a-entity camera></a-entity>
+      <a-box
+        position="0 0 0"
+        scale="0.3 0.3 0.3"
+        color="purple">
+      </a-box>
+
+    </a-entity>
 
   </a-scene>
 
-<script>
-  const debug = document.getElementById('debug');
-  const nft = document.querySelector('#myNFT');
+  <script>
+    const target = document.querySelector(
+      '[mindar-image-target]'
+    );
 
-  function msg(text) {
-    debug.innerHTML += '<br>' + text;
-  }
+    const status = document.getElementById('status');
 
-  window.addEventListener('load', function () {
-    msg('① ページOK');
-
-    if (AFRAME.components['nft']) {
-      msg('② NFTコンポーネント登録OK');
-    } else {
-      msg('② NFTコンポーネント登録なし');
-    }
-  });
-
-  nft.addEventListener('componentinitialized', function () {
-    msg('③ a-nft初期化OK');
-  });
-
-  nft.addEventListener('loaded', function () {
-    msg('④ a-nft loaded');
-  });
-
-  nft.addEventListener('markerFound', function () {
-    msg('🎯 markerFound！！');
-  });
-
-  nft.addEventListener('markerLost', function () {
-    msg('❌ markerLost');
-  });
-
-  window.addEventListener('arjs-nft-loaded', function () {
-    msg('⑤ NFT読み込み完了！');
-
-    Promise.all([
-      fetch('./tuki.fset').then(r => 'fset: ' + r.status),
-      fetch('./tuki.fset3').then(r => 'fset3: ' + r.status),
-      fetch('./tuki.iset').then(r => 'iset: ' + r.status)
-    ])
-    .then(results => {
-      results.forEach(msg);
-    })
-    .catch(err => {
-      msg('FETCH ERROR: ' + err);
+    target.addEventListener('targetFound', () => {
+      status.textContent = '🎯 画像を認識しました！';
     });
 
-    document.getElementById('status').textContent =
-      'NFT読み込み完了！画像を見せてね';
-  });
-
-  window.addEventListener('error', function (e) {
-    msg('ERROR: ' + e.message);
-  });
-</script>
+    target.addEventListener('targetLost', () => {
+      status.textContent = '画像を探しています...';
+    });
+  </script>
 
 </body>
 </html>
