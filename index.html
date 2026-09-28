@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>カメラ練習</title>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    video {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+    }
+
+    button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      font-size: 20px;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <button onclick="startCamera()">カメラを起動</button>
+
+  <video id="camera" autoplay playsinline></video>
+
+  <script>
+    async function startCamera() {
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "environment"
+        }
+      });
+
+      document.getElementById("camera").srcObject = stream;
+    }
+  </script>
+
+</body>
+</html>
