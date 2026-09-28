@@ -4,8 +4,12 @@
   <meta charset="UTF-8">
   <title>ARテスト</title>
 
-<script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.8/aframe/build/aframe-ar-nft.js"></script>
+  <!-- A-Frame -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js"></script>
+
+  <!-- AR.js NFT -->
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.8/aframe/build/aframe-ar-nft.js"></script>
+
   <style>
     body {
       margin: 0;
@@ -20,44 +24,98 @@
       color: red;
       font-size: 20px;
     }
+
+    #debug {
+      position: fixed;
+      top: 50px;
+      left: 10px;
+      z-index: 99999;
+      background: white;
+      color: black;
+      font-size: 18px;
+      padding: 10px;
+    }
   </style>
 </head>
 
 <body>
 
-<div id="debug"
-style="position:fixed;top:80px;left:10px;z-index:99999;
-background:white;color:black;font-size:18px;padding:10px;">
-NFTチェック開始
-</div>
+  <div id="status">
+    AR起動中...
+  </div>
 
-<script>
-const debug = document.getElementById('debug');
+  <div id="debug">
+    NFTチェック開始
+  </div>
 
-function msg(text) {
-  debug.innerHTML += '<br>' + text;
-}
+  <a-scene
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true; precision: medium;"
+    embedded
+    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+  >
 
-window.addEventListener('load', function () {
-  msg('① ページOK');
-});
+    <a-nft
+      id="myNFT"
+      type="nft"
+      url="illustreter"
+      smooth="true"
+      smoothCount="10"
+      smoothTolerance="0.01"
+      smoothThreshold="5"
+    >
 
-document.querySelector('a-nft').addEventListener('componentinitialized', function () {
-  msg('② a-nft OK');
-});
+      <a-box
+        position="0 0 0"
+        scale="1 1 1"
+        color="purple">
+      </a-box>
 
-document.querySelector('a-nft').addEventListener('loaded', function () {
-  msg('③ a-nft loaded');
-});
+    </a-nft>
 
-window.addEventListener('arjs-nft-loaded', function () {
-  msg('④ NFT読み込み完了');
-});
+    <a-entity camera></a-entity>
 
-window.addEventListener('error', function (e) {
-  msg('ERROR: ' + e.message);
-});
-</script>
+  </a-scene>
+
+  <script>
+
+    const debug = document.getElementById('debug');
+    const nft = document.querySelector('#myNFT');
+
+    function msg(text) {
+      debug.innerHTML += '<br>' + text;
+    }
+
+    window.addEventListener('load', function () {
+      msg('① ページOK');
+
+      if (AFRAME.components['nft']) {
+        msg('② NFTコンポーネント登録OK');
+      } else {
+        msg('② NFTコンポーネント登録なし');
+      }
+    });
+
+    nft.addEventListener('componentinitialized', function () {
+      msg('③ a-nft初期化OK');
+    });
+
+    nft.addEventListener('loaded', function () {
+      msg('④ a-nft loaded');
+    });
+
+    window.addEventListener('arjs-nft-loaded', function () {
+      msg('⑤ NFT読み込み完了！');
+
+      document.getElementById('status').textContent =
+        'NFT読み込み完了！画像を見せてね';
+    });
+
+    window.addEventListener('error', function (e) {
+      msg('ERROR: ' + e.message);
+    });
+
+  </script>
 
 </body>
 </html>
