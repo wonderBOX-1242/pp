@@ -64,7 +64,20 @@
           dur: 3000
         ">
       </a-box>
+<script>
+  window.addEventListener('arjs-nft-loaded', function () {
+    document.querySelector('.arjs-loader').style.display = 'none';
+    console.log('NFTデータの読み込み完了！');
+  });
 
+  window.addEventListener('camera-init', function () {
+    console.log('カメラ起動完了！');
+  });
+
+  window.addEventListener('camera-error', function (e) {
+    console.error('カメラエラー:', e);
+  });
+</script>
     </a-nft>
 
     <a-entity camera></a-entity>
