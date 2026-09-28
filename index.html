@@ -74,73 +74,67 @@
   </a-box>
 
 </a-nft>
-</a-nft>
     <a-entity camera></a-entity>
 
   </a-scene>
 
-  <script>
-const nft = document.querySelector('#myNFT');
+<script>
+  const debug = document.getElementById('debug');
+  const nft = document.querySelector('#myNFT');
 
-nft.addEventListener('markerFound', function () {
-  msg('🎯 markerFound！！');
-});
+  function msg(text) {
+    debug.innerHTML += '<br>' + text;
+  }
 
-nft.addEventListener('markerLost', function () {
-  msg('❌ markerLost');
-});
-    const debug = document.getElementById('debug');
-    const nft = document.querySelector('#myNFT');
+  window.addEventListener('load', function () {
+    msg('① ページOK');
 
-    function msg(text) {
-      debug.innerHTML += '<br>' + text;
+    if (AFRAME.components['nft']) {
+      msg('② NFTコンポーネント登録OK');
+    } else {
+      msg('② NFTコンポーネント登録なし');
     }
+  });
 
-    window.addEventListener('load', function () {
-      msg('① ページOK');
+  nft.addEventListener('componentinitialized', function () {
+    msg('③ a-nft初期化OK');
+  });
 
-      if (AFRAME.components['nft']) {
-        msg('② NFTコンポーネント登録OK');
-      } else {
-        msg('② NFTコンポーネント登録なし');
-      }
+  nft.addEventListener('loaded', function () {
+    msg('④ a-nft loaded');
+  });
+
+  nft.addEventListener('markerFound', function () {
+    msg('🎯 markerFound！！');
+  });
+
+  nft.addEventListener('markerLost', function () {
+    msg('❌ markerLost');
+  });
+
+  window.addEventListener('arjs-nft-loaded', function () {
+    msg('⑤ NFT読み込み完了！');
+
+    Promise.all([
+      fetch('./tuki.fset').then(r => 'fset: ' + r.status),
+      fetch('./tuki.fset3').then(r => 'fset3: ' + r.status),
+      fetch('./tuki.iset').then(r => 'iset: ' + r.status)
+    ])
+    .then(results => {
+      results.forEach(msg);
+    })
+    .catch(err => {
+      msg('FETCH ERROR: ' + err);
     });
 
-    nft.addEventListener('componentinitialized', function () {
-      msg('③ a-nft初期化OK');
-    });
+    document.getElementById('status').textContent =
+      'NFT読み込み完了！画像を見せてね';
+  });
 
-    nft.addEventListener('loaded', function () {
-      msg('④ a-nft loaded');
-    });
-    nft.addEventListener('markerFound', function () {
-  msg('⑤ マーカー認識！！');
-});
-
-nft.addEventListener('markerLost', function () {
-  msg('⑥ マーカーを見失った');
-});
-
-    window.addEventListener('arjs-nft-loaded', function () {
-      msg('⑤ NFT読み込み完了！');
-Promise.all([
-  fetch('./tuki.fset').then(r => 'fset: ' + r.status),
-  fetch('./tuki.fset3').then(r => 'fset3: ' + r.status),
-  fetch('./tuki.iset').then(r => 'iset: ' + r.status)
-]).then(results => {
-  results.forEach(msg);
-}).catch(err => {
-  msg('FETCH ERROR: ' + err);
-});
-      document.getElementById('status').textContent =
-        'NFT読み込み完了！画像を見せてね';
-    });
-
-    window.addEventListener('error', function (e) {
-      msg('ERROR: ' + e.message);
-    });
-
-  </script>
+  window.addEventListener('error', function (e) {
+    msg('ERROR: ' + e.message);
+  });
+</script>
 
 </body>
 </html>
