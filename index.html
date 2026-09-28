@@ -2,46 +2,49 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>はじめてのAR</title>
+  <title>カメラ練習</title>
 
-  <!-- A-Frame -->
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
 
-  <!-- AR.js -->
-  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.8/aframe/build/aframe-ar.js"></script>
+    video {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+    }
+
+    button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      font-size: 20px;
+      padding: 10px 20px;
+    }
+  </style>
 </head>
 
-<body style="margin: 0; overflow: hidden;">
+<body>
 
-  <a-scene
-    embedded
-    arjs="sourceType: webcam; debugUIEnabled: false;"
-  >
+  <button onclick="startCamera()">カメラを起動</button>
 
-    <!-- Hiroマーカーを認識する -->
-    <a-marker preset="hiro">
+  <video id="camera" autoplay playsinline></video>
 
-      <!-- マーカーの上に紫色の箱を表示 -->
-      <a-box
-        position="0 0.5 0"
-        rotation="0 0 0"
-        color="purple"
-        animation="
-          property: rotation;
-          to: 0 360 0;
-          loop: true;
-          dur: 3000
-        "
-      ></a-box>
+  <script>
+    async function startCamera() {
 
-    </a-marker>
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "environment"
+        }
+      });
 
-    <!-- カメラ -->
-    <a-entity camera></a-entity>
-
-  </a-scene>
+      document.getElementById("camera").srcObject = stream;
+    }
+  </script>
 
 </body>
-</html>
-
 </html>
