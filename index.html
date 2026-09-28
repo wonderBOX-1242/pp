@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>ARテスト</title>
+  <title>ARカード</title>
 
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
@@ -31,7 +31,7 @@
 <body>
 
   <div id="status">
-    MindAR起動中...
+    AR起動中...
   </div>
 
   <a-scene
@@ -52,34 +52,60 @@
       look-controls="enabled: false">
     </a-camera>
 
+
+    <!-- カード① -->
     <a-entity mindar-image-target="targetIndex: 0">
 
-   <a-image
-  src="./ar-image.png"
-  position="0 0 0"
-  width="1"
-  height="1"
-  rotation="90 0 0"
-></a-image>
+      <a-image
+        src="./ar-image1.png"
+        position="0 0 0"
+        width="1"
+        height="1"
+        rotation="90 0 0">
+      </a-image>
+
+    </a-entity>
+
+
+    <!-- カード② -->
+    <a-entity mindar-image-target="targetIndex: 1">
+
+      <a-image
+        src="./ar-image2.png"
+        position="0 0 0"
+        width="1"
+        height="1"
+        rotation="0 0 0">
+      </a-image>
 
     </a-entity>
 
   </a-scene>
 
+
   <script>
-    const target = document.querySelector(
-      '[mindar-image-target]'
-    );
 
     const status = document.getElementById('status');
 
-    target.addEventListener('targetFound', () => {
-      status.textContent = '🎯 画像を認識しました！';
+    const targets =
+      document.querySelectorAll('[mindar-image-target]');
+
+    targets[0].addEventListener('targetFound', () => {
+      status.textContent = '🎯 カード①を認識しました！';
     });
 
-    target.addEventListener('targetLost', () => {
-      status.textContent = '画像を探しています...';
+    targets[0].addEventListener('targetLost', () => {
+      status.textContent = 'カードを探しています...';
     });
+
+    targets[1].addEventListener('targetFound', () => {
+      status.textContent = '🎯 カード②を認識しました！';
+    });
+
+    targets[1].addEventListener('targetLost', () => {
+      status.textContent = 'カードを探しています...';
+    });
+
   </script>
 
 </body>
