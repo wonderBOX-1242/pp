@@ -6,41 +6,47 @@
 
   <style>
     body {
-      margin: 0;
-      overflow: hidden;
+      text-align: center;
+      font-family: sans-serif;
     }
 
     video {
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
+      width: 90%;
+      max-width: 500px;
     }
 
     button {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 10;
       font-size: 20px;
-      padding: 10px 20px;
+      padding: 15px 25px;
+      margin: 20px;
     }
   </style>
 </head>
 
 <body>
 
+  <h1>📷 カメラテスト</h1>
+
   <button onclick="startCamera()">カメラを起動</button>
+
+  <br>
 
   <video id="camera" autoplay playsinline></video>
 
   <script>
     async function startCamera() {
-
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "environment"
         }
       });
+
+      document.getElementById("camera").srcObject = stream;
+    }
+  </script>
+
+</body>
+</html>
 
       document.getElementById("camera").srcObject = stream;
     }
