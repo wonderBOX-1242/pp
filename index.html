@@ -24,6 +24,10 @@
 <div style="position:fixed;top:10px;left:10px;z-index:9999;color:red;font-size:20px;">
 NFTテスト
 </div>
+<div id="status"
+     style="position:fixed;top:50px;left:10px;z-index:9999;color:red;font-size:20px;">
+  NFT読み込み確認中...
+</div>
     <a-nft
       type="nft"
        url="./illustreter"
@@ -44,6 +48,22 @@ NFTテスト
     <a-entity camera></a-entity>
 
   </a-scene>
+  <a-camera></a-camera>
+
+  <script>
+    const nft = document.querySelector('a-nft');
+
+    nft.addEventListener('loaded', function () {
+      document.getElementById('status').textContent =
+        'NFTコンポーネント読み込みOK';
+    });
+
+    nft.addEventListener('arjs-nft-loaded', function () {
+      document.getElementById('status').textContent =
+        '🎯 NFTデータ読み込み完了';
+    });
+  </script>
 
 </body>
+  
 </html>
