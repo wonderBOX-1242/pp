@@ -2,49 +2,47 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>カメラ練習</title>
+  <title>わたしのAR</title>
 
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-    }
-
-    video {
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-    }
-
-    button {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 10;
-      font-size: 20px;
-      padding: 10px 20px;
-    }
-  </style>
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.8/aframe/build/aframe-ar-nft.js"></script>
 </head>
 
-<body>
+<body style="margin: 0; overflow: hidden;">
 
-  <button onclick="startCamera()">カメラを起動</button>
+<a-scene
+  embedded
+  vr-mode-ui="enabled: false"
+  renderer="logarithmicDepthBuffer: true;"
+  arjs="sourceType: webcam; debugUIEnabled: false;"
+>
 
-  <video id="camera" autoplay playsinline></video>
+  <a-nft
+    type="nft"
+    url="illustrator"
+    smooth="true"
+    smoothCount="10"
+    smoothTolerance=".01"
+    smoothThreshold="5"
+  >
 
-  <script>
-    async function startCamera() {
+    <a-box
+      position="0 0 0.5"
+      scale="0.5 0.5 0.5"
+      color="purple"
+      animation="
+        property: rotation;
+        to: 0 360 0;
+        loop: true;
+        dur: 3000
+      ">
+    </a-box>
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "environment"
-        }
-      });
+  </a-nft>
 
-      document.getElementById("camera").srcObject = stream;
-    }
-  </script>
+  <a-entity camera></a-entity>
+
+</a-scene>
 
 </body>
 </html>
