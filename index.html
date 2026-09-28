@@ -57,24 +57,38 @@
     arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
   >
 
-   <a-nft
+  <a-nft
   id="myNFT"
   type="nft"
-  url="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/trex-image/trex"
-  emitevents="true"
->
+  url="illustreter"
+  smooth="true"
+  smoothCount="10"
+  smoothTolerance="0.01"
+  smoothThreshold="5"
+  emitevents="true">
+
   <a-box
     position="0 0 0"
     scale="1 1 1"
     color="purple">
   </a-box>
+
+</a-nft>
 </a-nft>
     <a-entity camera></a-entity>
 
   </a-scene>
 
   <script>
+const nft = document.querySelector('#myNFT');
 
+nft.addEventListener('markerFound', function () {
+  msg('🎯 markerFound！！');
+});
+
+nft.addEventListener('markerLost', function () {
+  msg('❌ markerLost');
+});
     const debug = document.getElementById('debug');
     const nft = document.querySelector('#myNFT');
 
