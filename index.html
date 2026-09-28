@@ -25,34 +25,38 @@
 
 <body>
 
-  <div id="filecheck"
-  style="position:fixed;top:80px;left:10px;z-index:99999;
-  background:white;color:black;font-size:16px;padding:10px;">
-  確認中...
-  </div>
+<div id="debug"
+style="position:fixed;top:80px;left:10px;z-index:99999;
+background:white;color:black;font-size:18px;padding:10px;">
+NFTチェック開始
+</div>
 
-  <script>
 <script>
+const debug = document.getElementById('debug');
+
+function msg(text) {
+  debug.innerHTML += '<br>' + text;
+}
 
 window.addEventListener('load', function () {
-  document.getElementById('status').textContent =
-    'ページ読み込みOK';
+  msg('① ページOK');
+});
+
+document.querySelector('a-nft').addEventListener('componentinitialized', function () {
+  msg('② a-nft OK');
+});
+
+document.querySelector('a-nft').addEventListener('loaded', function () {
+  msg('③ a-nft loaded');
 });
 
 window.addEventListener('arjs-nft-loaded', function () {
-  document.getElementById('status').textContent =
-    'NFT読み込み完了！';
+  msg('④ NFT読み込み完了');
 });
 
-window.addEventListener('arjs-nft-loaded', function () {
-  console.log('NFT LOADED');
+window.addEventListener('error', function (e) {
+  msg('ERROR: ' + e.message);
 });
-
-window.addEventListener('error', function (event) {
-  document.getElementById('status').textContent =
-    'エラー：' + event.message;
-});
-
 </script>
 
 </body>
