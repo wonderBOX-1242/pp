@@ -25,6 +25,28 @@
 
 <body>
 
+  <div id="filecheck"
+  style="position:fixed;top:80px;left:10px;z-index:99999;
+  background:white;color:black;font-size:16px;padding:10px;">
+  確認中...
+  </div>
+
+  <script>
+  Promise.all([
+    fetch('./illustreter.fset').then(r => 'fset: ' + r.status),
+    fetch('./illustreter.fset3').then(r => 'fset3: ' + r.status),
+    fetch('./illustreter.iset').then(r => 'iset: ' + r.status)
+  ])
+  .then(result => {
+    document.getElementById('filecheck').innerHTML =
+      result.join('<br>');
+  })
+  .catch(error => {
+    document.getElementById('filecheck').textContent =
+      '読み込みエラー: ' + error;
+  });
+  </script>
+
   <div id="status">AR起動中...</div>
 
   <a-scene
@@ -54,7 +76,6 @@
     <a-entity camera></a-entity>
 
   </a-scene>
-
 <script>
   window.addEventListener('load', function () {
     document.getElementById('status').textContent =
