@@ -65,6 +65,7 @@
       smoothCount="10"
       smoothTolerance="0.01"
       smoothThreshold="5"
+      emitevents="true"
     >
 
       <a-box
@@ -105,6 +106,13 @@
     nft.addEventListener('loaded', function () {
       msg('④ a-nft loaded');
     });
+    nft.addEventListener('markerFound', function () {
+  msg('⑤ マーカー認識！！');
+});
+
+nft.addEventListener('markerLost', function () {
+  msg('⑥ マーカーを見失った');
+});
 
     window.addEventListener('arjs-nft-loaded', function () {
       msg('⑤ NFT読み込み完了！');
