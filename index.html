@@ -24,13 +24,23 @@
       color: black;
       padding: 10px;
       font-size: 18px;
-    }
-  </style>
+      max-width: calc(100vw - 40px);
+ border-radius: 8px;
+ pointer-events: none;
+}
+
+ /* [Codex修正 01] 起動失敗を画面上で判別できる表示を追加 */
+#status.error {
+ background: #8b0000;
+ color: white;
+ }
+    </style>
 </head>
 
 <body>
-
-  <div id="status">
+<!-- [Codex修正 02] 状態変化を読み上げソフトにも通知 -->
+43 <div id="status" role="status" aria-live="polite">
+ 
     AR起動中...
   </div>
 
@@ -55,13 +65,13 @@
 
     <!-- カード① -->
     <a-entity mindar-image-target="targetIndex: 0">
-
+<!-- [Codex修正 03] 90度回転で画像が真横を向く状態を解消 -->
       <a-image
         src="./ar-image.png"
         position="0 0 0"
         width="1"
         height="1"
-        rotation="90 0 0">
+       rotation="0 0 0">
       </a-image>
 
     </a-entity>
@@ -69,13 +79,13 @@
 
     <!-- カード② -->
     <a-entity mindar-image-target="targetIndex: 1">
-
+      <!-- [Codex修正 03] カード②もターゲット面と平行に表示 -->
       <a-image
         src="./ar-image2.jpg"
         position="0 0 0"
         width="1"
         height="1"
-        rotation="90 0 0">
+       rotation="0 0 0">
       </a-image>
 
     </a-entity>
@@ -84,26 +94,51 @@
 
 
   <script>
-
+// [Codex修正 04] 起動・認識・消失・異常を一か所で管理
+ const scene = document.querySelector('a-scene');
     const status = document.getElementById('status');
-
-    const targets =
-      document.querySelectorAll('[mindar-image-target]');
-
-    targets[0].addEventListener('targetFound', () => {
-      status.textContent = '🎯 カード①を認識しました！';
+const targets = document.querySelectorAll('[mindar-image-target]');
+ const targetNames = ['カード①', 'カード②'];
+ const visibleTargets = new Set();
+function updateStatus(message, isError = false) {
+status.textContent = message;
+status.classList.toggle('error', isError);
+  }
+    scene.addEventListener('arReady', () => {
+      updateStatus('カードをカメラに映してください');
     });
-
-    targets[0].addEventListener('targetLost', () => {
-      status.textContent = 'カードを探しています...';
+scene.addEventListener('arError', () => {
+ updateStatus('カメラを起動できません。権限とHTTPS接続を確認してください。', true);
+  
     });
+targets.forEach((target, index) => {
+const targetName = targetNames[index] ?? `カード${index + 1}`;
 
-    targets[1].addEventListener('targetFound', () => {
-      status.textContent = '🎯 カード②を認識しました！';
+ target.addEventListener('targetFound', () => {
+ visibleTargets.add(index);
+ updateStatus(`􀀀 ${targetName}を認識しました！`);
+ });
+
+ target.addEventListener('targetLost', () => {
+ visibleTargets.delete(index);
+
+if (visibleTargets.size === 0) {
+ updateStatus('カードを探しています...');
+ return;
+ }
+
+ const names = [...visibleTargets].map((targetIndex) =>
+ targetNames[targetIndex] ?? `カード${targetIndex + 1}`
+ );
+ updateStatus(`􀀀 ${names.join('・')}を認識中です`);
+ });
+  
     });
-
-    targets[1].addEventListener('targetLost', () => {
-      status.textContent = 'カードを探しています...';
+// targets.mind や画像の読み込み失敗も画面に表示する。
+ window.addEventListener('unhandledrejection', (event) => {
+ console.error(event.reason);
+ updateStatus('ARデータを読み込めません。targets.mindと表示画像を確認してください。', true);
+  
     });
 
   </script>
