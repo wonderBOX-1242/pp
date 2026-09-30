@@ -1,110 +1,171 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <title>ARカード</title>
 
   <!-- A-Frame -->
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 
   <!-- MindAR -->
+
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
+    html,
     body {
       margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
+      background: #000;
     }
 
     #status {
       position: fixed;
       top: 10px;
       left: 10px;
+      right: 10px;
       z-index: 9999;
 
-      background: white;
-      color: black;
+      box-sizing: border-box;
 
-      padding: 10px;
-      font-size: 18px;
+      background: rgba(255, 255, 255, 0.92);
+      color: #111;
 
-      max-width: calc(100vw - 40px);
+      padding: 12px 14px;
+      border-radius: 10px;
 
-      border-radius: 8px;
+      font-size: 16px;
+      line-height: 1.4;
+
+      text-align: center;
 
       pointer-events: none;
     }
 
     #status.error {
-      background: #8b0000;
+      background: rgba(139, 0, 0, 0.95);
       color: white;
     }
+
+    #startButton {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+
+      transform: translate(-50%, -50%);
+
+      z-index: 10000;
+
+      display: none;
+
+      border: none;
+      border-radius: 12px;
+
+      padding: 15px 25px;
+
+      background: #ffffff;
+      color: #111;
+
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #startButton.show {
+      display: block;
+    }
   </style>
+
 </head>
 
 <body>
 
-  <div id="status" role="status" aria-live="polite">
-    AR起動中...
+  <div id="status">
+    ARを起動しています...
   </div>
 
-  <a-scene
-    mindar-image="
-      imageTargetSrc: ./targets.mind;
-      uiLoading: yes;
-      uiScanning: yes;
-      uiError: yes;
-     filterMinCF: 0.0001;
-　  filterBeta: 0.001;
-    "
-    color-space="sRGB"
-    renderer="colorManagement: true"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false"
-  >
+  <button id="startButton">
+    カメラを起動する
+  </button>
 
-    <a-camera
-      position="0 0 0"
-      look-controls="enabled: false">
-    </a-camera>
+<a-scene
+mindar-image="
+imageTargetSrc: ./targets.mind;
+uiLoading: yes;
+uiScanning: yes;
+uiError: yes;
+filterMinCF: 0.0001;
+filterBeta: 0.001;
+"
+color-space="sRGB"
+renderer="
+colorManagement: true;
+physicallyCorrectLights: false;
+"
+vr-mode-ui="enabled: false"
+device-orientation-permission-ui="enabled: false"
+embedded
 
+>
 
-    <!-- カード① -->
-    <a-entity mindar-image-target="targetIndex: 0">
-
-      <a-image
-        src="./ar-image.png"
-        position="0 0 0"
-        width="1"
-        height="1"
-        rotation="90 0 0">
-      </a-image>
-
-    </a-entity>
+```
+<!-- カメラ -->
+<a-camera
+  position="0 0 0"
+  look-controls="enabled: false"
+  wasd-controls="enabled: false">
+</a-camera>
 
 
-    <!-- カード② -->
-    <a-entity mindar-image-target="targetIndex: 1">
+<!-- ==================== -->
+<!-- カード① -->
+<!-- ==================== -->
 
-      <a-image
-        src="./ar-image2.jpg"
-        position="0 0 0"
-        width="1"
-        height="1"
-        rotation="90 0 0">
-      </a-image>
+<a-entity
+  mindar-image-target="targetIndex: 0">
 
-    </a-entity>
+  <a-image
+    src="./ar-image.png"
+    position="0 0 0"
+    width="1"
+    height="1"
+    rotation="0 0 0">
+  </a-image>
+
+</a-entity>
+
+
+<!-- ==================== -->
+<!-- カード② -->
+<!-- ==================== -->
+
+<a-entity
+  mindar-image-target="targetIndex: 1">
+
+  <a-image
+    src="./ar-image2.jpg"
+    position="0 0 0"
+    width="1"
+    height="1"
+    rotation="0 0 0">
+  </a-image>
+
+</a-entity>
+```
 
   </a-scene>
-
 
   <script>
 
     const scene = document.querySelector('a-scene');
     const status = document.getElementById('status');
+    const startButton = document.getElementById('startButton');
 
     const targets =
       document.querySelectorAll('[mindar-image-target]');
@@ -117,6 +178,9 @@
     const visibleTargets = new Set();
 
 
+    /*
+     * ステータス表示
+     */
     function updateStatus(message, isError = false) {
 
       status.textContent = message;
@@ -129,94 +193,261 @@
     }
 
 
-    // AR起動成功
-    scene.addEventListener('arReady', () => {
+    /*
+     * HTTPS確認
+     */
+    function checkHTTPS() {
 
-      updateStatus(
-        'カードをカメラに映してください'
-      );
-
-    });
-
-
-    // AR起動失敗
-    scene.addEventListener('arError', () => {
-
-      updateStatus(
-        'カメラを起動できません。カメラの権限とHTTPS接続を確認してください。',
-        true
-      );
-
-    });
-
-
-    // カード認識
-    targets.forEach((target, index) => {
-
-      const targetName =
-        targetNames[index] ??
-        `カード${index + 1}`;
-
-
-      target.addEventListener(
-        'targetFound',
-        () => {
-
-          visibleTargets.add(index);
-
-          updateStatus(
-            `✨ ${targetName}を認識しました！`
-          );
-
-        }
-      );
-
-
-      target.addEventListener(
-        'targetLost',
-        () => {
-
-          visibleTargets.delete(index);
-
-
-          if (visibleTargets.size === 0) {
-
-            updateStatus(
-              'カードを探しています...'
-            );
-
-            return;
-          }
-
-
-          const names =
-            [...visibleTargets].map(
-              (targetIndex) =>
-                targetNames[targetIndex] ??
-                `カード${targetIndex + 1}`
-            );
-
-
-          updateStatus(
-            `✨ ${names.join('・')}を認識中です`
-          );
-
-        }
-      );
-
-    });
-
-
-    // ARデータ読み込みエラー
-    window.addEventListener(
-      'unhandledrejection',
-      (event) => {
-
-        console.error(event.reason);
+      if (location.protocol !== 'https:') {
 
         updateStatus(
-          'ARデータを読み込めません。targets.mindと表示画像を確認してください。',
+          'HTTPS接続が必要です。GitHub Pagesのhttps://から開いてください。',
           true
+        );
+
+        return false;
+      }
+
+      return true;
+    }
+
+
+    /*
+     * Android / iPhone 判定
+     */
+    function getDeviceName() {
+
+      const ua = navigator.userAgent ||
+                 navigator.vendor ||
+                 window.opera;
+
+      if (/android/i.test(ua)) {
+        return 'Android';
+      }
+
+      if (/iPhone|iPad|iPod/i.test(ua)) {
+        return 'iPhone / iPad';
+      }
+
+      return 'PCなど';
+    }
+
+
+    /*
+     * ページ読み込み時
+     */
+    window.addEventListener('load', () => {
+
+      const device =
+        getDeviceName();
+
+      console.log(
+        '使用端末:',
+        device
+      );
+
+
+      if (!checkHTTPS()) {
+        return;
+      }
+
+
+      updateStatus(
+        'カメラを起動しています...'
+      );
+
+    });
+
+
+    /*
+     * AR起動成功
+     */
+    scene.addEventListener(
+      'arReady',
+      () => {
+
+        startButton.classList.remove('show');
+
+        updateStatus(
+          'カードをカメラに映してください'
+        );
+
+      }
+    );
+
+
+    /*
+     * AR起動失敗
+     */
+    scene.addEventListener(
+      'arError',
+      () => {
+
+        updateStatus(
+          'カメラを起動できませんでした。ブラウザのカメラ権限とHTTPS接続を確認してください。',
+          true
+        );
+
+        startButton.classList.add('show');
+
+      }
+    );
+
+
+    /*
+     * カメラ起動ボタン
+     *
+     * Androidで自動起動できない場合に
+     * ユーザー操作から再起動できるようにする
+     */
+    startButton.addEventListener(
+      'click',
+      async () => {
+
+        startButton.classList.remove('show');
+
+        updateStatus(
+          'カメラを起動しています...'
+        );
+
+        try {
+
+          const cameraStream =
+            await navigator.mediaDevices.getUserMedia({
+              video: {
+                facingMode: {
+                  ideal: 'environment'
+                }
+              },
+              audio: false
+            });
+
+
+          /*
+           * カメラが使えることを確認したら
+           * すぐにストリームを停止。
+           * 実際のARカメラはMindARに任せる。
+           */
+          cameraStream
+            .getTracks()
+            .forEach(track => track.stop());
+
+
+          updateStatus(
+            'カードをカメラに映してください'
+          );
+
+        } catch (error) {
+
+          console.error(
+            'Camera error:',
+            error
+          );
+
+
+          updateStatus(
+            'カメラを使用できません。Chrome/Safariのカメラ権限を確認してください。',
+            true
+          );
+
+          startButton.classList.add('show');
+
+        }
+
+      }
+    );
+
+
+    /*
+     * カード認識
+     */
+    targets.forEach(
+      (target, index) => {
+
+        const targetName =
+          targetNames[index] ??
+          `カード${index + 1}`;
+
+
+        target.addEventListener(
+          'targetFound',
+          () => {
+
+            visibleTargets.add(index);
+
+            updateStatus(
+              `✨ ${targetName}を認識しました！`
+            );
+
+          }
+        );
+
+
+        target.addEventListener(
+          'targetLost',
+          () => {
+
+            visibleTargets.delete(index);
+
+
+            if (visibleTargets.size === 0) {
+
+              updateStatus(
+                'カードを探しています...'
+              );
+
+              return;
+            }
+
+
+            const names =
+              [...visibleTargets].map(
+                targetIndex =>
+                  targetNames[targetIndex] ??
+                  `カード${targetIndex + 1}`
+              );
+
+
+            updateStatus(
+              `✨ ${names.join('・')}を認識中です`
+            );
+
+          }
+        );
+
+      }
+    );
+
+
+    /*
+     * ARデータ読み込みエラー
+     */
+    window.addEventListener(
+      'unhandledrejection',
+      event => {
+
+        console.error(
+          event.reason
+        );
+
+        updateStatus(
+          'ARデータを読み込めません。targets.mindと画像ファイルを確認してください。',
+          true
+        );
+
+      }
+    );
+
+
+    /*
+     * JavaScriptエラー
+     */
+    window.addEventListener(
+      'error',
+      event => {
+
+        console.error(
+          event.error
         );
 
       }
@@ -226,3 +457,4 @@
 
 </body>
 </html>
+
