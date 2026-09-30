@@ -7,11 +7,7 @@
 
   <title>ARカード</title>
 
-  <!-- A-Frame -->
-
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-
-  <!-- MindAR -->
 
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
@@ -34,16 +30,14 @@
       z-index: 9999;
 
       box-sizing: border-box;
+      padding: 12px;
 
       background: rgba(255, 255, 255, 0.92);
       color: #111;
 
-      padding: 12px 14px;
       border-radius: 10px;
 
       font-size: 16px;
-      line-height: 1.4;
-
       text-align: center;
 
       pointer-events: none;
@@ -52,33 +46,6 @@
     #status.error {
       background: rgba(139, 0, 0, 0.95);
       color: white;
-    }
-
-    #startButton {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-
-      transform: translate(-50%, -50%);
-
-      z-index: 10000;
-
-      display: none;
-
-      border: none;
-      border-radius: 12px;
-
-      padding: 15px 25px;
-
-      background: #ffffff;
-      color: #111;
-
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    #startButton.show {
-      display: block;
     }
   </style>
 
@@ -90,10 +57,6 @@
     ARを起動しています...
   </div>
 
-  <button id="startButton">
-    カメラを起動する
-  </button>
-
 <a-scene
 mindar-image="
 imageTargetSrc: ./targets.mind;
@@ -104,10 +67,7 @@ filterMinCF: 0.0001;
 filterBeta: 0.001;
 "
 color-space="sRGB"
-renderer="
-colorManagement: true;
-physicallyCorrectLights: false;
-"
+renderer="colorManagement: true"
 vr-mode-ui="enabled: false"
 device-orientation-permission-ui="enabled: false"
 embedded
@@ -115,17 +75,13 @@ embedded
 >
 
 ```
-<!-- カメラ -->
 <a-camera
   position="0 0 0"
-  look-controls="enabled: false"
-  wasd-controls="enabled: false">
+  look-controls="enabled: false">
 </a-camera>
 
 
-<!-- ==================== -->
 <!-- カード① -->
-<!-- ==================== -->
 
 <a-entity
   mindar-image-target="targetIndex: 0">
@@ -141,9 +97,7 @@ embedded
 </a-entity>
 
 
-<!-- ==================== -->
 <!-- カード② -->
-<!-- ==================== -->
 
 <a-entity
   mindar-image-target="targetIndex: 1">
@@ -163,25 +117,30 @@ embedded
 
   <script>
 
-    const scene = document.querySelector('a-scene');
-    const status = document.getElementById('status');
-    const startButton = document.getElementById('startButton');
+    const scene =
+      document.querySelector('a-scene');
+
+    const status =
+      document.getElementById('status');
 
     const targets =
-      document.querySelectorAll('[mindar-image-target]');
+      document.querySelectorAll(
+        '[mindar-image-target]'
+      );
 
     const targetNames = [
       'カード①',
       'カード②'
     ];
 
-    const visibleTargets = new Set();
+    const visibleTargets =
+      new Set();
 
 
-    /*
-     * ステータス表示
-     */
-    function updateStatus(message, isError = false) {
+    function updateStatus(
+      message,
+      isError = false
+    ) {
 
       status.textContent = message;
 
@@ -193,80 +152,23 @@ embedded
     }
 
 
-    /*
-     * HTTPS確認
-     */
-    function checkHTTPS() {
+    // HTTPS確認
 
-      if (location.protocol !== 'https:') {
-
-        updateStatus(
-          'HTTPS接続が必要です。GitHub Pagesのhttps://から開いてください。',
-          true
-        );
-
-        return false;
-      }
-
-      return true;
-    }
-
-
-    /*
-     * Android / iPhone 判定
-     */
-    function getDeviceName() {
-
-      const ua = navigator.userAgent ||
-                 navigator.vendor ||
-                 window.opera;
-
-      if (/android/i.test(ua)) {
-        return 'Android';
-      }
-
-      if (/iPhone|iPad|iPod/i.test(ua)) {
-        return 'iPhone / iPad';
-      }
-
-      return 'PCなど';
-    }
-
-
-    /*
-     * ページ読み込み時
-     */
-    window.addEventListener('load', () => {
-
-      const device =
-        getDeviceName();
-
-      console.log(
-        '使用端末:',
-        device
-      );
-
-
-      if (!checkHTTPS()) {
-        return;
-      }
-
+    if (location.protocol !== 'https:') {
 
       updateStatus(
-        'カメラを起動しています...'
+        'HTTPS接続が必要です。',
+        true
       );
 
-    });
+    }
 
 
-    /*
-     * AR起動成功
-     */
+    // AR起動成功
+
     scene.addEventListener(
       'arReady',
       () => {
-
-        startButton.classList.remove('show');
 
         updateStatus(
           'カードをカメラに映してください'
@@ -276,91 +178,23 @@ embedded
     );
 
 
-    /*
-     * AR起動失敗
-     */
+    // AR起動エラー
+
     scene.addEventListener(
       'arError',
       () => {
 
         updateStatus(
-          'カメラを起動できませんでした。ブラウザのカメラ権限とHTTPS接続を確認してください。',
+          'カメラを起動できません。ChromeまたはSafariのカメラ権限とHTTPS接続を確認してください。',
           true
         );
 
-        startButton.classList.add('show');
-
       }
     );
 
 
-    /*
-     * カメラ起動ボタン
-     *
-     * Androidで自動起動できない場合に
-     * ユーザー操作から再起動できるようにする
-     */
-    startButton.addEventListener(
-      'click',
-      async () => {
+    // カード認識
 
-        startButton.classList.remove('show');
-
-        updateStatus(
-          'カメラを起動しています...'
-        );
-
-        try {
-
-          const cameraStream =
-            await navigator.mediaDevices.getUserMedia({
-              video: {
-                facingMode: {
-                  ideal: 'environment'
-                }
-              },
-              audio: false
-            });
-
-
-          /*
-           * カメラが使えることを確認したら
-           * すぐにストリームを停止。
-           * 実際のARカメラはMindARに任せる。
-           */
-          cameraStream
-            .getTracks()
-            .forEach(track => track.stop());
-
-
-          updateStatus(
-            'カードをカメラに映してください'
-          );
-
-        } catch (error) {
-
-          console.error(
-            'Camera error:',
-            error
-          );
-
-
-          updateStatus(
-            'カメラを使用できません。Chrome/Safariのカメラ権限を確認してください。',
-            true
-          );
-
-          startButton.classList.add('show');
-
-        }
-
-      }
-    );
-
-
-    /*
-     * カード認識
-     */
     targets.forEach(
       (target, index) => {
 
@@ -419,9 +253,8 @@ embedded
     );
 
 
-    /*
-     * ARデータ読み込みエラー
-     */
+    // 読み込みエラー
+
     window.addEventListener(
       'unhandledrejection',
       event => {
@@ -438,23 +271,7 @@ embedded
       }
     );
 
-
-    /*
-     * JavaScriptエラー
-     */
-    window.addEventListener(
-      'error',
-      event => {
-
-        console.error(
-          event.error
-        );
-
-      }
-    );
-
   </script>
 
 </body>
 </html>
-
