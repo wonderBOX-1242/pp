@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-
-<html lang="ja">
+<html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,17 +7,12 @@
   <title>ARカード</title>
 
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
       overflow: hidden;
-      background: #000;
     }
 
     #status {
@@ -28,126 +22,91 @@
       right: 10px;
       z-index: 9999;
 
-      padding: 12px;
-      border-radius: 10px;
+      background: white;
+      color: black;
 
-      background: rgba(255,255,255,0.92);
-      color: #111;
+      padding: 10px;
+      font-size: 18px;
 
-      font-size: 16px;
-      text-align: center;
+      border-radius: 8px;
 
       pointer-events: none;
     }
 
     #status.error {
-      background: rgba(139,0,0,0.95);
+      background: #8b0000;
       color: white;
     }
-
-    #startButton {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-
-      z-index: 10000;
-
-      padding: 16px 30px;
-
-      border: none;
-      border-radius: 12px;
-
-      background: white;
-      color: black;
-
-      font-size: 18px;
-      font-weight: bold;
-    }
   </style>
-
 </head>
 
 <body>
 
-  <div id="status">
-    ARを準備しています...
+  <div id="status" role="status" aria-live="polite">
+    AR起動中...
   </div>
 
-  <button id="startButton">
-    ARを開始する
-  </button>
 
-<a-scene
-mindar-image="
-imageTargetSrc: ./targets.mind;
-autoStart: false;
-uiLoading: no;
-uiScanning: yes;
-uiError: yes;
-filterMinCF: 0.0001;
-filterBeta: 0.001;
-"
-color-space="sRGB"
-renderer="colorManagement: true"
-vr-mode-ui="enabled: false"
-device-orientation-permission-ui="enabled: false"
-embedded
+  <a-scene
+    mindar-image="
+      imageTargetSrc: ./targets.mind;
+      uiLoading: yes;
+      uiScanning: yes;
+      uiError: yes;
+      filterMinCF: 0.0001;
+      filterBeta: 0.001;
+    "
+    color-space="sRGB"
+    renderer="colorManagement: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+  >
 
->
-
-```
-<a-camera
-  position="0 0 0"
-  look-controls="enabled: false">
-</a-camera>
+    <a-camera
+      position="0 0 0"
+      look-controls="enabled: false">
+    </a-camera>
 
 
-<!-- カード① -->
+    <!-- カード① -->
 
-<a-entity mindar-image-target="targetIndex: 0">
+    <a-entity mindar-image-target="targetIndex: 0">
 
-  <a-image
-    src="./ar-image.png"
-    position="0 0 0"
-    width="1"
-    height="1"
-    rotation="0 0 0">
-  </a-image>
+      <a-image
+        src="./ar-image.png"
+        position="0 0 0"
+        width="1"
+        height="1"
+        rotation="0 0 0">
+      </a-image>
 
-</a-entity>
+    </a-entity>
 
 
-<!-- カード② -->
+    <!-- カード② -->
 
-<a-entity mindar-image-target="targetIndex: 1">
+    <a-entity mindar-image-target="targetIndex: 1">
 
-  <a-image
-    src="./ar-image2.jpg"
-    position="0 0 0"
-    width="1"
-    height="1"
-    rotation="0 0 0">
-  </a-image>
+      <a-image
+        src="./ar-image2.jpg"
+        position="0 0 0"
+        width="1"
+        height="1"
+        rotation="0 0 0">
+      </a-image>
 
-</a-entity>
-```
+    </a-entity>
 
   </a-scene>
+
 
   <script>
 
     const scene =
       document.querySelector('a-scene');
 
-    const arSystem =
-      scene.systems['mindar-image-system'];
-
     const status =
       document.getElementById('status');
-
-    const startButton =
-      document.getElementById('startButton');
 
     const targets =
       document.querySelectorAll(
@@ -179,59 +138,7 @@ embedded
 
 
     /*
-     * Startボタン
-     */
-
-    startButton.addEventListener(
-      'click',
-      async () => {
-
-        if (location.protocol !== 'https:') {
-
-          updateStatus(
-            'HTTPS接続が必要です。',
-            true
-          );
-
-          return;
-        }
-
-
-        startButton.style.display =
-          'none';
-
-        updateStatus(
-          'カメラを起動しています...'
-        );
-
-
-        try {
-
-          await arSystem.start();
-
-        } catch (error) {
-
-          console.error(
-            'MindAR start error:',
-            error
-          );
-
-          updateStatus(
-            'カメラを起動できませんでした。ブラウザのカメラ権限を確認してください。',
-            true
-          );
-
-          startButton.style.display =
-            'block';
-
-        }
-
-      }
-    );
-
-
-    /*
-     * AR起動成功
+     * AR起動完了
      */
 
     scene.addEventListener(
@@ -255,12 +162,9 @@ embedded
       () => {
 
         updateStatus(
-          'カメラを起動できません。カメラ権限とHTTPS接続を確認してください。',
+          'カメラを起動できません。権限とHTTPS接続を確認してください。',
           true
         );
-
-        startButton.style.display =
-          'block';
 
       }
     );
@@ -299,13 +203,16 @@ embedded
             visibleTargets.delete(index);
 
 
-            if (visibleTargets.size === 0) {
+            if (
+              visibleTargets.size === 0
+            ) {
 
               updateStatus(
                 'カードを探しています...'
               );
 
               return;
+
             }
 
 
@@ -329,7 +236,7 @@ embedded
 
 
     /*
-     * ARデータ読み込みエラー
+     * データ読み込みエラー
      */
 
     window.addEventListener(
@@ -341,7 +248,7 @@ embedded
         );
 
         updateStatus(
-          'ARデータを読み込めません。targets.mindと画像ファイルを確認してください。',
+          'ARデータを読み込めません。targets.mindと表示画像を確認してください。',
           true
         );
 
